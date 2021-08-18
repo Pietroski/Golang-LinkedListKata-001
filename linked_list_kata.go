@@ -1,35 +1,54 @@
 package LinkedListKata
 
+import (
+	"sync"
+)
+
+var (
+	wg sync.WaitGroup
+)
+
 type SinglyLinkedListNode struct {
 	data int
 	next *SinglyLinkedListNode
 }
 
 func removeNodes(listHead *SinglyLinkedListNode, x int) *SinglyLinkedListNode {
-	var filteredList []*SinglyLinkedListNode
+	var filteredList *SinglyLinkedListNode
 
-	node := listHead
-	for node.next != nil {
-		if node.data <= x {
-			filteredList = append(filteredList, node)
+	gn := generateNodes(listHead, x)
+	filteredList = concatNodes(gn, x)
+
+	return filteredList
+}
+
+func generateNodes(listHead *SinglyLinkedListNode, x int) <-chan *SinglyLinkedListNode {
+	out := make(chan *SinglyLinkedListNode)
+	go func() {
+		node := listHead
+		for node.next != nil {
+			if node.data <= x {
+				out <- node
+			}
+
+			node = node.next
 		}
+		close(out)
+	}()
+	return out
+}
 
+func concatNodes(linkedList <-chan *SinglyLinkedListNode, x int) *SinglyLinkedListNode {
+	var listToRelink = []*SinglyLinkedListNode{ <-linkedList }
+
+	node := listToRelink[0].next
+	for node != nil {
+		if node.data <= x {
+			listToRelink = append(listToRelink, node)
+		}
 		node = node.next
 	}
 
-	return concatNodes(filteredList)
-}
-
-func concatNodes(linkedList []*SinglyLinkedListNode) *SinglyLinkedListNode {
-	var listToRelink []*SinglyLinkedListNode
-
-	linkedLen := len(linkedList)
-	for i := 1; i < linkedLen; i++ {
-		ll := linkedList[i-1]
-		ll.next = linkedList[i]
-		listToRelink = append(listToRelink, ll)
-	}
-
-	listToRelink[linkedLen - 2].next.next = nil
+	listToRelink[len(listToRelink) - 2].next.next = nil
 	return listToRelink[0]
 }

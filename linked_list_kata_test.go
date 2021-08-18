@@ -64,6 +64,7 @@ func TestRemoveNodes(t *testing.T) {
 			if node.data != out.data {
 				msg := fmt.Errorf("test number %v failed | expected: %v, got: %v", testNum, out, node)
 				panic(msg)
+				fmt.Println(msg)
 			}
 
 			node = node.next
