@@ -26,9 +26,13 @@ func generateNodes(listHead *SinglyLinkedListNode, x int) <-chan *SinglyLinkedLi
 	out := make(chan *SinglyLinkedListNode)
 	go func() {
 		node := listHead
-		for node.next != nil {
+		for node != nil {
 			if node.data <= x {
 				out <- node
+			}
+
+			if node.next == nil {
+				break
 			}
 
 			node = node.next
@@ -41,14 +45,18 @@ func generateNodes(listHead *SinglyLinkedListNode, x int) <-chan *SinglyLinkedLi
 func concatNodes(linkedList <-chan *SinglyLinkedListNode, x int) *SinglyLinkedListNode {
 	var listToRelink = []*SinglyLinkedListNode{ <-linkedList }
 
-	node := listToRelink[0].next
-	for node != nil {
-		if node.data <= x {
-			listToRelink = append(listToRelink, node)
+	node := listToRelink[0]
+	for i := 0; node != nil; i++ {
+		nextItem := <-linkedList
+		if nextItem == nil {
+			break
 		}
-		node = node.next
+		listToRelink[i].next = nextItem
+		listToRelink = append(listToRelink, nextItem)
+		node = nextItem
 	}
 
+	// clean the last element's pointer
 	listToRelink[len(listToRelink) - 2].next.next = nil
 	return listToRelink[0]
 }

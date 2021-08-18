@@ -44,6 +44,44 @@ var tableTestLLMap = map[int]testModel{
 			},
 		},
 	},
+	1: {
+		x: 3,
+		input:  &SinglyLinkedListNode{
+			data: 5,
+			next: &SinglyLinkedListNode{
+				data: 1,
+				next: &SinglyLinkedListNode{
+					data: 2,
+					next: &SinglyLinkedListNode{
+						data: 3,
+						next: &SinglyLinkedListNode{
+							data: 4,
+							next: &SinglyLinkedListNode{
+								data: 5,
+								next: &SinglyLinkedListNode{
+									data: 2,
+									next: nil,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		output: &SinglyLinkedListNode{
+			data: 1,
+			next: &SinglyLinkedListNode{
+				data: 2,
+				next: &SinglyLinkedListNode{
+					data: 3,
+					next: &SinglyLinkedListNode{
+						data: 2,
+						next: nil,
+					},
+				},
+			},
+		},
+	},
 }
 
 func TestRemoveNodes(t *testing.T) {
