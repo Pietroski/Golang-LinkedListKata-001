@@ -5,31 +5,24 @@ type SinglyLinkedListNode struct {
 	next *SinglyLinkedListNode
 }
 
-func removeNodes(listHead *SinglyLinkedListNode, x int) *SinglyLinkedListNode {
-	var filteredList []*SinglyLinkedListNode
-
-	node := listHead
-	for node.next != nil {
-		if node.data <= x {
-			filteredList = append(filteredList, node)
-		}
-
-		node = node.next
+func removeNodes(llist *SinglyLinkedListNode, position int) *SinglyLinkedListNode {
+	if position == 0 {
+		return llist.next
 	}
 
-	return concatNodes(filteredList)
+	filterNode(llist, position, 0)
+	return llist
 }
 
-func concatNodes(linkedList []*SinglyLinkedListNode) *SinglyLinkedListNode {
-	var listToRelink []*SinglyLinkedListNode
+func filterNode(llist *SinglyLinkedListNode, position, counter int) *SinglyLinkedListNode {
+	if llist != nil && llist.next != nil {
+		if counter+1 == position {
+			llist.next = llist.next.next
+		}
 
-	linkedLen := len(linkedList)
-	for i := 1; i < linkedLen; i++ {
-		ll := linkedList[i-1]
-		ll.next = linkedList[i]
-		listToRelink = append(listToRelink, ll)
+		counter++
+		return filterNode(llist.next, position, counter)
 	}
 
-	listToRelink[linkedLen - 2].next.next = nil
-	return listToRelink[0]
+	return llist
 }
